@@ -2,6 +2,7 @@ import React, {useState} from "react";
 
 function QuestionItem({ question, onQuestionDelete }) {
   const { id, prompt, answers, correctIndex } = question;
+  const [deleting, setDeleting] = useState(false);
 
   const options = answers.map((answer, index) => (
     <option key={index} value={index}>
@@ -10,10 +11,13 @@ function QuestionItem({ question, onQuestionDelete }) {
   ));
 
   const handleDelete = () => {
+    setDeleting(true)
     fetch(`http://localhost:4000/questions/${id}`, {
       method: 'DELETE'
     })
-    onQuestionDelete(question)
+    .then(()=>{
+      setDeleting(false)
+      onQuestionDelete(question)})
   }
 
   const handleChange = (e) => {
@@ -38,6 +42,7 @@ function QuestionItem({ question, onQuestionDelete }) {
         <select defaultValue={correctIndex} onChange={handleChange}>{options}</select>
       </label>
       <button onClick={handleDelete}>Delete Question</button>
+      {deleting ? <p>Item is being deleted</p> : <></>}
     </li>
   );
 }
